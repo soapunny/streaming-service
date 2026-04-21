@@ -1,0 +1,47 @@
+<!-- client/src/test/vanilla.html -->
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="root"></div>
+    </body>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        //const useState = React.useState;
+        //const [count, setCount] = useState(0);
+
+        let count = 0;
+        function setCount(newCount){
+            count = newCount;
+        }
+
+        const Title = () => {
+            return (
+                <h3 id="title" className="text-red-500" style={{color: "red"}}>
+                    Total Count: 0
+                </h3>
+            );
+        };
+        // const h2 = React.createElement('h2', 
+        // {id: "total-click", className: "text-red-500", style: {color: "red"}}, 
+        // `Total clicks: ${count}`);
+            
+        const ClickMe = () => {
+            return (
+                <button id="click-me" onClick={() => console.log("Button clicked")}>
+                    Click Me
+                    </button>
+                );
+        };
+        // const btn = React.createElement('button', {id: "btn", onClick: () => console.log("Button clicked")}, 'Click Me');
+                
+        const root = document.getElementById('root');
+        ReactDOM.createRoot(root).render(
+            <React.Fragment>
+                <Title />
+                <ClickMe />
+            </React.Fragment>
+        );
+    </script>
+</html>
