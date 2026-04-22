@@ -1,0 +1,53 @@
+<!-- client/src/test/unit-convertor.html -->
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="root"></div>
+    </body>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const root = document.getElementById("root");
+        const App = () => {
+            const [minutes, setMinutes] = React.useState("");
+            const [hours, setHours] = React.useState("");
+
+            const ConvertMinToHr = (e) => {
+                e.preventDefault();
+                const newVal = e.target.value;
+                setMinutes(newVal);
+                const minInt = parseInt(newVal);
+                let currHr = Math.round(minInt*100 / 60)/100;
+                if(!currHr) currHr = 0;
+                setHours((prevHr) => `${currHr}`);
+            };
+
+            const ConvertHrToMin = (e) => {
+                e.preventDefault();
+                const newVal = e.target.value;
+                setHours(newVal);
+                const hrInt = Number(newVal);
+                let currMin = Math.round(hrInt*60);
+                if(!currMin) currMin = 0;
+                setMinutes((prevMin) => `${currMin}`);
+            };
+            
+            return (
+                <div>
+                    <h1>Unit Converter</h1>
+                    <div>
+                        <label htmlFor="minutes">Minutes:</label>
+                        <input id="minutes" type = "number" value = {minutes} 
+                        onChange={(e) => ConvertMinToHr(e)} placeholder = "Minutes" />
+                        <label htmlFor="hours">Hours:</label>
+                        <input id="hours" type = "number" value = {hours} 
+                        onChange={(e) => ConvertHrToMin(e)} placeholder = "Hours" />
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(root).render(<App />);
+    </script>
+</html>

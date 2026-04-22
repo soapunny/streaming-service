@@ -2,17 +2,29 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <span id="totalClick">Total clicks: 0</span>
-        <button id="btn">Click Me</button>
+        <div id="root"></div>
     </body>
-    <script>
-        let counter = 0;
-        const button = document.getElementById('btn');
-        const span = document.getElementById('totalClick');
-        function handleClick(){
-            counter++;
-            span.textContent = `Total clicks: ${counter}`;
-        }
-        button.addEventListener('click', handleClick);
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+
+        const root = document.getElementById('root');
+        const App = () => {
+            const [count, setCount] = React.useState(0);
+            const handleClick = () => {
+                //setCount(count + 1);
+                setCount((prevCount) => prevCount + 1);
+            };
+
+            return (
+                <div>
+                    <h2>Total Clicks: {count}</h2>
+                    <button onClick = {handleClick} >Click Me</button>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(root).render(<App />);
     </script>
 </html>
