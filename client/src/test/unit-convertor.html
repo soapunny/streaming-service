@@ -8,11 +8,11 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
-        const root = document.getElementById("root");
-        const App = () => {
+
+        const MinutesToHours = () => {
             const [minutes, setMinutes] = React.useState("");
             const [hours, setHours] = React.useState("");
-
+            
             const ConvertMinToHr = (e) => {
                 e.preventDefault();
                 const newVal = e.target.value;
@@ -22,7 +22,7 @@
                 if(!currHr) currHr = 0;
                 setHours((prevHr) => `${currHr}`);
             };
-
+            
             const ConvertHrToMin = (e) => {
                 e.preventDefault();
                 const newVal = e.target.value;
@@ -35,19 +35,85 @@
             
             return (
                 <div>
-                    <h1>Unit Converter</h1>
-                    <div>
-                        <label htmlFor="minutes">Minutes:</label>
-                        <input id="minutes" type = "number" value = {minutes} 
-                        onChange={(e) => ConvertMinToHr(e)} placeholder = "Minutes" />
-                        <label htmlFor="hours">Hours:</label>
-                        <input id="hours" type = "number" value = {hours} 
-                        onChange={(e) => ConvertHrToMin(e)} placeholder = "Hours" />
-                    </div>
+                    <label htmlFor="minutes">Minutes:</label>
+                    <input id="minutes" type = "number" value = {minutes} 
+                    onChange={(e) => ConvertMinToHr(e)} placeholder = "Minutes" />
+                    <label htmlFor="hours">Hours:</label>
+                    <input id="hours" type = "number" value = {hours} 
+                    onChange={(e) => ConvertHrToMin(e)} placeholder = "Hours" />
                 </div>
             );
         }
 
+        const MilesToKm = () => {
+            const [miles, setMiles] = React.useState("");
+            const [km, setKm] = React.useState("");
+            
+            const convertMilesToKm = (e) => {
+                e.preventDefault();
+                const newMiles = e.target.value;
+                // if(isNaN(newMiles)){  // In case you use 'text' type instead of 'number' for input.
+                //     setMiles(0);
+                //     return;
+                // }
+                setMiles(newMiles);
+                const newKm = Math.round(newMiles * 1.609344 * 100)/100;
+                setKm((prevKm) => newKm);
+            }
+
+            const convertKmToMiles = (e) => {
+                e.preventDefault();
+                const newKm = e.target.value;
+                // if(isNaN(newKm)){
+                //     setKm(0);
+                //     return;
+                // }
+                setKm(newKm);
+                const newMiles = Math.round(newKm*0.621371 * 100)/100;
+                setMiles((prevMiles) => newMiles);
+            }
+
+            return (
+                <div>
+                    <label htmlFor="miles">Miles:</label>
+                    <input id="miles" type="number" value={miles} placeholder="Miles" onChange={(e) => convertMilesToKm(e)}/>
+                    <label htmlFor="km">KM:</label>
+                    <input id="km" type="number" value={km} placeholder="KM" onChange={(e) => convertKmToMiles(e)}/>
+                </div>
+            );
+        }
+        
+        const App = () => {
+            const options = [
+                {value: "Select", label: "Select Unit", component: null},
+                {value: "MinutesToHours", label: "Minutes & Hours", component: <MinutesToHours />},
+                {value: "MilesToKm", label: "Miles & Km", component: <MilesToKm />}
+            ]
+            const [show, setShow] = React.useState(options[0].value);
+
+            const handleShow = (e) => {
+                e.preventDefault();
+                const currShow = e.target.value;
+                setShow((prevShow) => currShow);
+            }
+            return (
+                <div>
+                    <h1>Unit Converter</h1>
+                    <select name="units" id="units" onChange={(e) => handleShow(e)}>
+                        {
+                        options.map(element => {
+                            return <option key={element.value} value={element.value}>{element.label}</option>
+                        })
+                        }
+                    </select>
+                    <hr/>
+                    {
+                        options.find((e) => e.value === show).component
+                    }
+                </div>
+            );
+        }
+        const root = document.getElementById("root");
         ReactDOM.createRoot(root).render(<App />);
-    </script>
+        </script>
 </html>
