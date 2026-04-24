@@ -1,0 +1,48 @@
+<!-- client/src/test/props.html -->
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="root"></div>
+    </body>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/prop-types/prop-types.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+
+        const Btn = ({label="Button", OnClick}) => {
+            return (
+                <button onClick = {OnClick} style = {{backgroundColor: "aqua", padding: "10px", border: "none", borderRadius: "10px", cursor: "pointer"}}>
+                    {label}
+                </button>
+            );
+        }
+        Btn.propTypes = {// Define the type of props (But we can use TypeScript for better type checking.)
+            label: PropTypes.string.isRequired,
+            OnClick: PropTypes.func
+        };
+
+        const MemorizedBtn = React.memo(Btn);
+        //Btn => Renders when parent renders.
+        //React.memo(Btn) => Only renders when props change.
+
+        const App = () => {
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                alert("Submitted");
+            }
+            const handleCancel = (e) => {
+                e.preventDefault();
+                alert("Cancelled");
+            }
+            return (
+                <div>
+                    <MemorizedBtn label="Submit" OnClick={handleSubmit} />
+                    <MemorizedBtn label="Cancel" OnClick={handleCancel} />
+                </div>
+            );
+        }
+        const root = document.getElementById("root");
+        ReactDOM.createRoot(root).render(<App />);
+        </script>
+</html>
