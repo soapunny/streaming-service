@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 
+interface Coin {
+    ask: string;
+    bid: string;
+    change_24_hour: string;
+    high: string;
+    last_price: string;
+    low: string;
+    market: string;
+    timestamp: number;
+    volume: string;
+}
 
 export const CryptoTracker = () => {
 
     const [loading, setLoading] = useState(true);
     const [coins, setCoins] = useState([]);
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState<Number | "">("");
     const [coinCount, setCoinCount] = useState(0);
     const [selectedCoin, setSelectedCoin] = useState("");
 
@@ -27,7 +38,7 @@ export const CryptoTracker = () => {
         return (
             <select value={selectedCoin} onChange={(e) => setSelectedCoin(e.target.value)}>
                 <option value={"0"}>Select Crypto</option>
-                {coins.map((coin: Object) => (
+                {coins.map((coin: Coin) => (
                     <option key={coin.market} value={coin.last_price}>{coin.market} : ${handleInputMinor(coin.last_price)}</option>
                 ))}
             </select>
@@ -36,12 +47,11 @@ export const CryptoTracker = () => {
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if(amount <= 0) {
+        if(Number(amount) <= 0) {
             alert("Value must be bigger than 0");
             return;
         }
-        console.log(selectedCoin);
-        setCoinCount(Math.floor(amount/Number(selectedCoin)*100)/100);
+        setCoinCount(Math.floor(Number(amount)/Number(selectedCoin)*100)/100);
 
     }
 
@@ -56,7 +66,7 @@ export const CryptoTracker = () => {
             <hr/>
             {loading ? <strong>Loading...</strong> : <CryptoList/>}
             <form onSubmit={onSubmit}>
-                $<input type="number" value={amount} onChange={(e) => OnChangeAmount(e)} placeholder="Enter money you want to invest"/>
+                $<input type="number" value={Number(amount)} onChange={(e) => OnChangeAmount(e)} placeholder="Enter money you want to invest"/>
                 <button type="submit">Enter</button>
                 <br/>
                 <p>You can buy: {coinCount} coins</p>
