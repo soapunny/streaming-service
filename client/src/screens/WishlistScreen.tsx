@@ -1,0 +1,1 @@
+// client/src/screens/WishlistScreen.tsx

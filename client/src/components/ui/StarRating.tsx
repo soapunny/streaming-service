@@ -1,0 +1,1 @@
+// client/src/components/ui/StarRating.tsx

@@ -1,4 +1,4 @@
-// client/src/components/Button.tsx
+// client/src/components/ui/Button.tsx
 
 import "@/global.css";
 
