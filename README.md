@@ -1,16 +1,69 @@
-# React + Vite
+# REEL
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A movie discovery app built with React + TypeScript, powered by the TMDB API.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** + **TypeScript**
+- **React Router v7** — client-side routing
+- **Vite** — build tool
+- **TMDB API** — movie data
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Browse movies by category (Now Playing, Popular, Upcoming, Top Rated)
+- Search movies by keyword
+- Movie detail page (backdrop, poster, genres, rating, overview)
+- Wishlist (coming soon)
+- Reviews & ratings (coming soon)
+- Trailer playback (coming soon)
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+├── api/          # TMDB API fetch logic
+├── components/
+│   ├── layout/   # Navbar
+│   └── ui/       # MovieCard, LoadingSpinner, Button
+├── constants/    # Genre mapping
+├── screens/      # HomeScreen, MovieDetailScreen, SearchScreen
+├── types/        # Movie, MovieDetail, Genre
+└── styles/       # global.css
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- TMDB API Key ([get one here](https://www.themoviedb.org/settings/api))
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your TMDB API key to .env
+VITE_TMDB_API_KEY=your_api_key_here
+
+# Start dev server
+npm run dev
+```
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `VITE_TMDB_API_KEY` | TMDB API key |
+
+## Roadmap
+
+- [ ] SearchScreen
+- [ ] WishlistScreen
+- [ ] Trailer playback
+- [ ] Reviews & ratings
+- [ ] Responsive design (mobile)
