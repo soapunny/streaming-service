@@ -134,13 +134,13 @@ body {
 }
 
 /* Category tabs */
-.category-tabs {
+.category-tabs { 
     display: flex;
     gap: 8px;
     margin-bottom: 32px;
 }
 
-.category-tab {
+.category-tab {/* Basic tap CSS */
     background: var(--card-color);
     color: var(--text-muted);
     border: 1px solid var(--border-color);
@@ -157,7 +157,7 @@ body {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-.category-tab--active {
+.category-tab--active {/*CSS of active tab */
     background: var(--primary-color);
     color: var(--text-color);
     border-color: var(--primary-color);

@@ -23,6 +23,8 @@ export interface Genre {
 }
 
 export interface MovieDetail extends Omit<Movie, 'genre_ids'> {
+    //Omit -> Typescript utility type
+    //Omit<Movie, 'genre_ids'>: Extend all the properties of Movie except 'genre_ids'
     genres: Genre[];
     runtime: number | null;
     tagline: string;

@@ -67,3 +67,17 @@ npm run dev
 - [ ] Trailer playback
 - [ ] Reviews & ratings
 - [ ] Responsive design (mobile)
+
+
+## Dev Log
+
+### 2025-05-19
+- Migrated project to TypeScript
+- Set up base layout (Navbar, HomeScreen, MovieDetailScreen)
+- Refactored genre mapping (removed redundant constants/genres.ts)
+
+### Learning Notes
+- TypeScript type narrowing (null check, generics)
+- useEffect async pattern
+- Movie vs MovieDetail type separation
+- Non-blocking I/O / Event Loop
