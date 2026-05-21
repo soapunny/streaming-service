@@ -56,8 +56,8 @@ npm run dev
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
+| Variable            | Description  |
+| ------------------- | ------------ |
 | `VITE_TMDB_API_KEY` | TMDB API key |
 
 ## Roadmap
@@ -68,16 +68,30 @@ npm run dev
 - [ ] Reviews & ratings
 - [ ] Responsive design (mobile)
 
-
 ## Dev Log
 
 ### 2025-05-19
+
 - Migrated project to TypeScript
 - Set up base layout (Navbar, HomeScreen, MovieDetailScreen)
 - Refactored genre mapping (removed redundant constants/genres.ts)
 
+### 2026-05-21
+
+- Implemented SearchScreen with real-time search
+- Added debounce (300ms) to prevent excessive API calls
+- Added encodeURIComponent / decodeURIComponent for safe URL handling
+- Added { replace: true } to prevent search history stacking
+- Fixed optional route parameter (/search/:keyword?)
+
 ### Learning Notes
+
 - TypeScript type narrowing (null check, generics)
 - useEffect async pattern
-- Movie vs MovieDetail type separation
+- Movie vs MovieDetail type separation (Omit utility type)
 - Non-blocking I/O / Event Loop
+- never[] vs typed array (useState generics)
+- Early Return pattern
+- debounce with setTimeout + useEffect cleanup
+- encodeURIComponent / decodeURIComponent
+- React Router replace option
