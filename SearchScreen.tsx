@@ -8,11 +8,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export const SearchScreen = () => {
-  const encodedKeyword = useParams().keyword;
-  const keyword = encodedKeyword
-    ? decodeURIComponent(encodedKeyword).trim()
-    : "";
-
+  const keyword = useParams().keyword?.trim();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
 

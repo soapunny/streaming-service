@@ -8,17 +8,10 @@ const NavBar = () => {
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const keyword = e.target.value;
     setSearchInput(keyword);
-
-    const trimmedKeyword = keyword.trim();
-    if (!trimmedKeyword) {
-      navigate("/search", { replace: true });
-      return;
-    }
-    navigate(`/search/${encodeURIComponent(trimmedKeyword)}`, {
-      replace: true,
-    });
+    navigate(`/search/${keyword}`);
   };
 
   return (
