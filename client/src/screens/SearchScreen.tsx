@@ -4,7 +4,7 @@ import { searchMovies } from "@/api/tmdb";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import MovieCard from "@/components/ui/MovieCard";
 import { Movie } from "@/types/movie";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export const SearchScreen = () => {
@@ -15,6 +15,11 @@ export const SearchScreen = () => {
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
+  const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!keyword) return;
@@ -22,54 +27,108 @@ export const SearchScreen = () => {
     const timer = setTimeout(async () => {
       try {
         const res = await searchMovies(keyword);
-        setMovies(res);
+        setMovies(res.results);
+        setPage(res.page);
+        setTotalPages(res.total_pages);
+        setTotalResults(res.total_results);
       } catch (err) {
         console.error("Failed to search movies:", err);
       } finally {
         setLoading(false);
       }
-    }, 300); //debounce: wait for 300ms after the user stops typing to send the request
+    }, 300);
 
-    return () => clearTimeout(timer); //cleanup: clear the timer if the component unmounts or keyword changes before the timer finishes
+    return () => clearTimeout(timer);
   }, [keyword]);
+
+  useEffect(() => {
+    if (page === 1 || page > totalPages) return;
+    setPageLoading(true);
+    const fetchMore = async () => {
+      try {
+        const res = await searchMovies(keyword, page);
+        setMovies((prev) => {
+          const existingIds = new Set(prev.map((m) => m.id));
+          const newMovies = res.results.filter((m) => !existingIds.has(m.id));
+          return [...prev, ...newMovies];
+        });
+        setTotalPages(res.total_pages);
+        setTotalResults(res.total_results);
+      } catch (err) {
+        console.error("Failed to load more movies:", err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    fetchMore();
+  }, [page]);
+
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && !pageLoading && page < totalPages) {
+        setPage((prev) => prev + 1);
+      }
+    },
+    [pageLoading, page, totalPages],
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0.5, // 요소가 50% 보이면 실행
+    });
+    if (observerRef.current) observer.observe(observerRef.current);
+    return () => observer.disconnect(); // cleanup
+  }, [handleObserver]);
 
   if (!keyword) {
     return (
       <div className="search-screen">
-        <h1>Search Movies</h1>
-        <p>Enter a keyword to search for movies.</p>
-      </div>
-    );
-  }
-  if (loading) {
-    return (
-      <div className="search-screen">
-        <h1>Search Movies</h1>
-        <LoadingSpinner />
-      </div>
-    );
-  }
-  if (movies.length === 0) {
-    return (
-      <div className="search-screen">
-        <h1>Search Movies</h1>
-        <p>No movies found for "{keyword}".</p>
+        <div className="search-empty">
+          <span className="search-empty__icon">🔍</span>
+          <p className="search-empty__title">Find your next movie</p>
+          <p className="search-empty__sub">
+            Type a keyword in the search bar above
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="search-screen">
-      <h1>Search Movies</h1>
-      <p>Showing results for "{keyword}"</p>
-      <div className="movie-grid">
-        {movies.map((movie) => (
-          <MovieCard key={movie.id} {...movie} />
-          // ...movie: spread operator(MovieCard's props must match movie's properties or error)
-        ))}
+      {loading ? (
+        <>
+          <p className="search-keyword">Results for "{keyword}"</p>
+          <LoadingSpinner />
+        </>
+      ) : movies.length === 0 ? (
+        <>
+          <p className="search-keyword">Results for "{keyword}"</p>
+          <div className="search-empty">
+            <span className="search-empty__icon">🎬</span>
+            <p className="search-empty__title">No results found</p>
+            <p className="search-empty__sub">Try a different keyword</p>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="search-keyword">
+            {totalResults} results for "{keyword}"
+          </p>
+          <div className="movie-grid">
+            {movies.map((movie) => (
+              <MovieCard key={movie.id} {...movie} />
+            ))}
+          </div>
+        </>
+      )}
+      {/* observerRef는 항상 DOM에 존재해야 함 */}
+      <div ref={observerRef} className="observer-target">
+        {pageLoading && <LoadingSpinner />}
       </div>
     </div>
   );
 };
-
 export default SearchScreen;
