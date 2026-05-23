@@ -19,7 +19,7 @@ export const SearchScreen = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const observerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null); // no re-render on ref change
 
   useEffect(() => {
     if (!keyword) return;
@@ -39,6 +39,10 @@ export const SearchScreen = () => {
     }, 300);
 
     return () => clearTimeout(timer);
+    // return() => {}: cleanup function, runs before next effect call or on unmount
+    // here, when page or keyword changes cleanup function runs.
+    // clearTimeout(timer): remove prior timer on keyword change or unmount
+    // If not, every keystroke would trigger a search, causing too many API calls
   }, [keyword]);
 
   useEffect(() => {
@@ -48,8 +52,9 @@ export const SearchScreen = () => {
       try {
         const res = await searchMovies(keyword, page);
         setMovies((prev) => {
-          const existingIds = new Set(prev.map((m) => m.id));
+          const existingIds = new Set(prev.map((m) => m.id)); // prev movies' ids
           const newMovies = res.results.filter((m) => !existingIds.has(m.id));
+          // if the new movies contain movie ids already in prev, filter them out to avoid duplicates
           return [...prev, ...newMovies];
         });
         setTotalPages(res.total_pages);
@@ -66,20 +71,22 @@ export const SearchScreen = () => {
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
+      // entries: observed elements' info array
+      const target = entries[0]; // we only observe one element, so entries[0] is our target
       if (target.isIntersecting && !pageLoading && page < totalPages) {
-        setPage((prev) => prev + 1);
+        //isIntersecting true when target is in viewport.
+        setPage((prev) => prev + 1); // load next page
       }
     },
     [pageLoading, page, totalPages],
-  );
+  ); // recreate only if pageLoading, page, or totalPages changes
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
-      threshold: 0.5, // 요소가 50% 보이면 실행
+      threshold: 0.5, // 요소가 50% 보이면 handleObserver 실행
     });
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect(); // cleanup
+    if (observerRef.current) observer.observe(observerRef.current); // observe the target element
+    return () => observer.disconnect(); // cleanup: when page changes, disconnect the observer to avoid memory leaks.
   }, [handleObserver]);
 
   if (!keyword) {
@@ -126,6 +133,7 @@ export const SearchScreen = () => {
       )}
       {/* observerRef는 항상 DOM에 존재해야 함 */}
       <div ref={observerRef} className="observer-target">
+        {/* 감시 대상 요소 -> div */}
         {pageLoading && <LoadingSpinner />}
       </div>
     </div>

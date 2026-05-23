@@ -84,6 +84,17 @@ npm run dev
 - Added { replace: true } to prevent search history stacking
 - Fixed optional route parameter (/search/:keyword?)
 
+### 2026-05-23
+
+- Implemented infinite scroll on SearchScreen with Intersection Observer
+- Added pagination support to searchMovies API (page parameter)
+- Added PaginatedResponse type
+- Split loading states (loading / pageLoading) to prevent scroll reset
+- Added duplicate movie deduplication with Set
+- Implemented Wishlist with Zustand + localStorage persist
+- Added wishlist heart button to MovieCard
+- Added WishlistScreen
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -95,3 +106,10 @@ npm run dev
 - debounce with setTimeout + useEffect cleanup
 - encodeURIComponent / decodeURIComponent
 - React Router replace option
+- useRef (DOM reference)
+- useCallback (function memoization)
+- Intersection Observer API
+- useEffect cleanup (preventing memory leaks)
+- Set for deduplication
+- Zustand store + persist middleware
+- localStorage vs cookie vs memory
