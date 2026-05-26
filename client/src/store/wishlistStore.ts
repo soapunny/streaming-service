@@ -12,8 +12,11 @@ interface WishlistStore {
 }
 
 export const useWishlistStore = create<WishlistStore>()(
+  // Call create()() twice to apply middleware
   persist(
+    // persist: middleware for auto-sync with localStorage
     (set, get) => ({
+      // define store state and actions
       wishlist: [],
 
       addToWishlist: (movie) =>
@@ -26,10 +29,10 @@ export const useWishlistStore = create<WishlistStore>()(
           wishlist: state.wishlist.filter((m) => m.id !== id),
         })),
 
-      isInWishlist: (id) => get().wishlist.some((m) => m.id === id),
+      isInWishlist: (id) => get().wishlist.some((m) => m.id === id), // some: return true if any movie in wishlist has the given id, otherwise false
     }),
     {
-      name: "reel-wishlist", // localStorage key
+      name: "reel-wishlist", // localStorage key, persist setup with this key, so wishlist data is saved under "reel-wishlist" in localStorage
     },
   ),
 );
