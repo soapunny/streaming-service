@@ -95,6 +95,11 @@ npm run dev
 - Added wishlist heart button to MovieCard
 - Added WishlistScreen
 
+### 2026-05-26
+
+- Reviewed and studied SearchScreen (infinite scroll, Intersection Observer)
+- Reviewed and studied wishlistStore (Zustand, persist middleware)
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -113,3 +118,6 @@ npm run dev
 - Set for deduplication
 - Zustand store + persist middleware
 - localStorage vs cookie vs memory
+- Array methods: some, every, find, filter, map
+- Zustand set(fn) vs set(value) difference
+- Zustand middleware pattern create()()
