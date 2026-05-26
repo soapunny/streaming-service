@@ -31,12 +31,14 @@ const NavBar = () => {
           type="text"
           className="navbar__search"
           placeholder="Search movies..."
-          value={searchInput}
+          value={searchInput} // Controlled Component: value is from state, onChange updates the state
           onChange={(e) => handleSearch(e)}
         />
         <span
           className="navbar__wishlist"
           onClick={() => navigate("/wishlist")}
+          // () => navigate("/wishlist"): function, which do not trigger the navigate right away
+          // onClick{navigate("/wishlist")}: navigate right away when component renders, which is not what we want
         >
           ♡
         </span>

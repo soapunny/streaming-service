@@ -99,6 +99,7 @@ npm run dev
 
 - Reviewed and studied SearchScreen (infinite scroll, Intersection Observer)
 - Reviewed and studied wishlistStore (Zustand, persist middleware)
+- Reviewed and studied Navbar (controlled component, event handling)
 
 ### Learning Notes
 
@@ -121,3 +122,6 @@ npm run dev
 - Array methods: some, every, find, filter, map
 - Zustand set(fn) vs set(value) difference
 - Zustand middleware pattern create()()
+- Controlled Component (value + onChange)
+- React event types (ChangeEvent, MouseEvent, KeyboardEvent)
+- onClick arrow function vs direct call
