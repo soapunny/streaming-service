@@ -23,7 +23,7 @@ export const getMovies = async (category: Category) => {
 
 export const getMovieById = async (id: string) => {
   const response = await fetch(
-    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=${API_LANGUAGE}`,
+    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=${API_LANGUAGE}&append_to_response=videos`,
   );
   const json = await response.json();
   return json;

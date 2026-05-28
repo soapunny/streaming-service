@@ -22,18 +22,26 @@ export interface Genre {
   name: string;
 }
 
+// 트레일러 타입 추가
+export interface Video {
+  id: string;
+  key: string; // YouTube 영상 ID
+  name: string;
+  site: string; // "YouTube" | "Vimeo"
+  type: string; // "Trailer" | "Teaser" | "Clip" ...
+  official: boolean;
+}
+
 export interface MovieDetail extends Omit<Movie, "genre_ids"> {
-  //Omit -> Typescript utility type
-  //Omit<Movie, 'genre_ids'>: Extend all the properties of Movie except 'genre_ids'
   genres: Genre[];
   runtime: number | null;
   tagline: string;
   status: string;
   budget: number;
   revenue: number;
+  videos: { results: Video[] }; // 추가
 }
 
-// 기존 Movie, MovieDetail, Genre 타입 아래에 추가
 export interface PaginatedResponse {
   page: number;
   results: Movie[];
