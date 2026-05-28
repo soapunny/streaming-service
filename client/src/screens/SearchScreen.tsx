@@ -3,6 +3,7 @@
 import { searchMovies } from "@/api/tmdb";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import MovieCard from "@/components/ui/MovieCard";
+import MovieCardSkeleton from "@/components/ui/MovieCardSkeleton";
 import { Movie } from "@/types/movie";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -108,7 +109,11 @@ export const SearchScreen = () => {
       {loading ? (
         <>
           <p className="search-keyword">Results for "{keyword}"</p>
-          <LoadingSpinner />
+          <div className="movie-grid">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <MovieCardSkeleton key={i} />
+            ))}
+          </div>
         </>
       ) : movies.length === 0 ? (
         <>

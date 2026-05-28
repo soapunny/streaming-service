@@ -4,7 +4,7 @@ import { Category, getMovies } from "@/api/tmdb";
 import { Movie } from "@/types/movie";
 import { useEffect, useState } from "react";
 import MovieCard from "@/components/ui/MovieCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import MovieCardSkeleton from "@/components/ui/MovieCardSkeleton";
 
 const CATEGORIES = [
   //prevent re-rendering by declaring the const outside. also protect encapsulation
@@ -52,7 +52,11 @@ const HomeScreen = () => {
       </div>
 
       {loading ? (
-        <LoadingSpinner />
+        <div className="movie-grid">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <MovieCardSkeleton key={i} />
+          ))}
+        </div>
       ) : (
         <div className="movie-grid">
           {movies.map((movie) => (
