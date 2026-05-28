@@ -101,6 +101,14 @@ npm run dev
 - Reviewed and studied wishlistStore (Zustand, persist middleware)
 - Reviewed and studied Navbar (controlled component, event handling)
 
+### 2026-05-28
+
+- Add responsive design (2col mobile / 3col tablet / 4col desktop)
+- Add trailer modal with YouTube iframe embed on MovieDetailScreen
+- Add official trailer filtering with YouTube fallback
+- Add Skeleton UI to HomeScreen and SearchScreen
+- Add MovieCardSkeleton component with shimmer animation
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -125,3 +133,7 @@ npm run dev
 - Controlled Component (value + onChange)
 - React event types (ChangeEvent, MouseEvent, KeyboardEvent)
 - onClick arrow function vs direct call
+- CSS Grid responsive layout (auto-fill, minmax, media queries)
+- YouTube iframe embed
+- Skeleton UI / shimmer animation
+- Array.from({ length: N }) for generating placeholder arrays
