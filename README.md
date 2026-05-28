@@ -108,6 +108,9 @@ npm run dev
 - Add official trailer filtering with YouTube fallback
 - Add Skeleton UI to HomeScreen and SearchScreen
 - Add MovieCardSkeleton component with shimmer animation
+- Deploy to AWS S3 + CloudFront
+- Configure CloudFront custom error responses for React Router
+- Add deploy.sh for automated redeployment
 
 ### Learning Notes
 
@@ -137,3 +140,8 @@ npm run dev
 - YouTube iframe embed
 - Skeleton UI / shimmer animation
 - Array.from({ length: N }) for generating placeholder arrays
+- AWS S3 static website hosting
+- AWS CloudFront CDN distribution
+- CloudFront custom error responses (React Router 404 fix)
+- AWS CLI (configure, s3 sync, cloudfront invalidation)
+- IAM user and permissions (least privilege principle)
