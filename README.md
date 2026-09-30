@@ -8,20 +8,21 @@ A movie discovery app built with React + TypeScript, powered by the TMDB API.
 - **React Router v7** — client-side routing
 - **Vite** — build tool
 - **TMDB API** — movie data
+- **Node.js + Express 5** + **TypeScript** — backend API proxy for TMDB (in progress)
 
 ## Features
 
 - Browse movies by category (Now Playing, Popular, Upcoming, Top Rated)
 - Search movies by keyword
 - Movie detail page (backdrop, poster, genres, rating, overview)
-- Wishlist (coming soon)
+- Wishlist (Zustand + localStorage)
+- Trailer playback (YouTube embed)
 - Reviews & ratings (coming soon)
-- Trailer playback (coming soon)
 
 ## Project Structure
 
 ```
-src/
+client/src/
 ├── api/          # TMDB API fetch logic
 ├── components/
 │   ├── layout/   # Navbar
@@ -30,7 +31,23 @@ src/
 ├── screens/      # HomeScreen, MovieDetailScreen, SearchScreen
 ├── types/        # Movie, MovieDetail, Genre
 └── styles/       # global.css
+
+server/src/
+├── index.ts      # Express app entry
+├── middleware/   # Centralized error handler
+├── routes/       # movies.ts, search.ts
+└── services/     # tmdb.ts (all TMDB calls go through fetchTmdb)
 ```
+
+## API Endpoints (server)
+
+| Method | Endpoint                       | Description                                                          |
+| ------ | ------------------------------ | -------------------------------------------------------------------- |
+| GET    | `/api/movies/:category`        | Movie list (`now_playing`, `popular`, `upcoming`, `top_rated`)       |
+| GET    | `/api/movie/:id`               | Movie detail (`id` must be numeric)                                  |
+| GET    | `/api/search?query=&page=`     | Search movies (`query` required, `page` positive integer, default 1) |
+
+Invalid input returns `400` with an error message.
 
 ## Getting Started
 
@@ -39,34 +56,45 @@ src/
 - Node.js 18+
 - TMDB API Key ([get one here](https://www.themoviedb.org/settings/api))
 
-### Installation
+### Client
 
 ```bash
-# Install dependencies
+cd client
 npm install
-
-# Set up environment variables
-cp .env.example .env
-# Add your TMDB API key to .env
-VITE_TMDB_API_KEY=your_api_key_here
-
-# Start dev server
+# Add VITE_TMDB_API_KEY to client/.env
 npm run dev
+```
+
+### Server
+
+```bash
+cd server
+npm install
+cp .env.example .env
+# Add your TMDB API key to server/.env
+npm run dev   # http://localhost:4000
 ```
 
 ## Environment Variables
 
-| Variable            | Description  |
-| ------------------- | ------------ |
-| `VITE_TMDB_API_KEY` | TMDB API key |
+| Location      | Variable            | Description                                 |
+| ------------- | ------------------- | ------------------------------------------- |
+| `client/.env` | `VITE_TMDB_API_KEY` | TMDB API key (until client moves to server) |
+| `server/.env` | `TMDB_API_KEY`      | TMDB API key                                |
+| `server/.env` | `PORT`              | Server port (default 4000)                  |
 
 ## Roadmap
 
-- [ ] SearchScreen
-- [ ] WishlistScreen
-- [ ] Trailer playback
+- [x] SearchScreen
+- [x] WishlistScreen
+- [x] Trailer playback
+- [x] Responsive design (mobile)
+- [x] Express API proxy for TMDB
+- [ ] Switch client to call the Express server
+- [ ] Redis caching (cache-aside, TTL)
+- [ ] Health check, Redis fallback to TMDB
+- [ ] Deploy server to AWS Elastic Beanstalk + ElastiCache
 - [ ] Reviews & ratings
-- [ ] Responsive design (mobile)
 
 ## Dev Log
 
@@ -112,6 +140,15 @@ npm run dev
 - Configure CloudFront custom error responses for React Router
 - Add deploy.sh for automated redeployment
 
+### 2026-09-29
+
+- Added Node.js/Express backend (`server/`) with TypeScript
+- Added `/api/movies/:category`, `/api/movie/:id`, `/api/search` endpoints proxying TMDB
+- Moved TMDB API key to server environment variables
+- Added input validation (category whitelist, numeric id, query/page checks)
+- Added centralized error handling middleware
+- Smoke-tested valid and invalid requests with curl
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -145,3 +182,6 @@ npm run dev
 - CloudFront custom error responses (React Router 404 fix)
 - AWS CLI (configure, s3 sync, cloudfront invalidation)
 - IAM user and permissions (least privilege principle)
+- Express Router, middleware chain, error-handling middleware (4 args)
+- Passing async errors to next(err)
+- Keeping API keys server-side (dotenv, .env.example)
