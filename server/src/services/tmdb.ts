@@ -1,3 +1,5 @@
+import { redis } from "./redis";
+
 const BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = process.env.TMDB_API_KEY;
 const API_LANGUAGE = "en-US";
@@ -18,7 +20,26 @@ class TmdbError extends Error {
   }
 }
 
+// ponytail: one TTL for everything; split per endpoint if movie details need longer
+const CACHE_TTL_SECONDS = 60 * 60;
+
+// Cache-aside: check Redis first, on a miss call TMDB and store the result.
+// Any Redis failure is logged and skipped, so TMDB is always the fallback.
 const fetchTmdb = async (path: string, params: Record<string, string> = {}) => {
+  // Key excludes api_key so the secret never ends up in Redis.
+  const cacheKey = `tmdb:${path}?${new URLSearchParams(params)}`;
+
+  try {
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      console.log(`cache HIT  ${cacheKey}`);
+      return JSON.parse(cached);
+    }
+  } catch (err) {
+    console.error("Redis get failed, falling back to TMDB:", (err as Error).message);
+  }
+  console.log(`cache MISS ${cacheKey}`);
+
   const query = new URLSearchParams({
     api_key: API_KEY ?? "",
     language: API_LANGUAGE,
@@ -28,7 +49,14 @@ const fetchTmdb = async (path: string, params: Record<string, string> = {}) => {
   if (!response.ok) {
     throw new TmdbError(`TMDB request failed: ${response.statusText}`, response.status);
   }
-  return response.json();
+  const data = await response.json();
+
+  // Not awaited: the user shouldn't wait for the cache write.
+  redis
+    .set(cacheKey, JSON.stringify(data), { EX: CACHE_TTL_SECONDS })
+    .catch((err) => console.error("Redis set failed:", err.message));
+
+  return data;
 };
 
 export const getMoviesByCategory = (category: Category) =>
@@ -37,5 +65,10 @@ export const getMoviesByCategory = (category: Category) =>
 export const getMovieById = (id: string) =>
   fetchTmdb(`/movie/${id}`, { append_to_response: "videos" });
 
+// Normalize so "Batman", "batman" and "batman  " share one cache entry
+// (TMDB search is case-insensitive, so the results are the same).
 export const searchMovies = (query: string, page: number) =>
-  fetchTmdb(`/search/movie`, { query, page: String(page) });
+  fetchTmdb(`/search/movie`, {
+    query: query.toLowerCase().replace(/\s+/g, " "),
+    page: String(page),
+  });
