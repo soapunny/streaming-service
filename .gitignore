@@ -31,3 +31,7 @@ dist-ssr
 .env.production
 
 .claude
+CLAUDE.md
+.serena/
+client/dist-config.json
+client/updated-config.json
