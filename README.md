@@ -9,6 +9,7 @@ A movie discovery app built with React + TypeScript, powered by the TMDB API.
 - **Vite** — build tool
 - **TMDB API** — movie data
 - **Node.js + Express 5** + **TypeScript** — backend API proxy for TMDB (in progress)
+- **Redis** — cache-aside caching for TMDB responses
 
 ## Features
 
@@ -36,7 +37,10 @@ server/src/
 ├── index.ts      # Express app entry
 ├── middleware/   # Centralized error handler
 ├── routes/       # movies.ts, search.ts
-└── services/     # tmdb.ts (all TMDB calls go through fetchTmdb)
+└── services/     # tmdb.ts (all TMDB calls go through fetchTmdb), redis.ts (client)
+
+server/scripts/
+└── measure-latency.sh  # cache miss vs hit latency (median of N runs)
 ```
 
 ## API Endpoints (server)
@@ -55,6 +59,7 @@ Invalid input returns `400` with an error message.
 
 - Node.js 18+
 - TMDB API Key ([get one here](https://www.themoviedb.org/settings/api))
+- Redis (macOS: `brew install redis && brew services start redis`). Optional: the server falls back to TMDB without it
 
 ### Client
 
@@ -82,6 +87,7 @@ npm run dev   # http://localhost:4000
 | `client/.env` | `VITE_TMDB_API_KEY` | TMDB API key (until client moves to server) |
 | `server/.env` | `TMDB_API_KEY`      | TMDB API key                                |
 | `server/.env` | `PORT`              | Server port (default 4000)                  |
+| `server/.env` | `REDIS_URL`         | Redis URL (default `redis://localhost:6379`) |
 
 ## Roadmap
 
@@ -91,7 +97,7 @@ npm run dev   # http://localhost:4000
 - [x] Responsive design (mobile)
 - [x] Express API proxy for TMDB
 - [ ] Switch client to call the Express server
-- [ ] Redis caching (cache-aside, TTL)
+- [x] Redis caching (cache-aside, TTL)
 - [ ] Health check, Redis fallback to TMDB
 - [ ] Deploy server to AWS Elastic Beanstalk + ElastiCache
 - [ ] Reviews & ratings
@@ -149,6 +155,22 @@ npm run dev   # http://localhost:4000
 - Added centralized error handling middleware
 - Smoke-tested valid and invalid requests with curl
 
+### 2026-09-30
+
+- Added Redis caching with the cache-aside pattern in `fetchTmdb` (one place covers all endpoints)
+- Cache key `tmdb:{path}?{params}`: excludes the API key; search terms are lowercased and whitespace-normalized
+- TTL 1 hour; error responses are not cached; cache writes don't block the response
+- Redis failure falls back to TMDB (`disableOfflineQueue` so requests fail fast instead of hanging)
+- Measured cache miss vs hit latency with `server/scripts/measure-latency.sh` (20 runs each, median):
+
+| Endpoint                   | Miss (TMDB) | Hit (Redis) |
+| -------------------------- | ----------- | ----------- |
+| `/api/movie/550`           | 17.3 ms     | 0.7 ms      |
+| `/api/search?query=batman` | 17.6 ms     | 0.7 ms      |
+| `/api/movies/popular`      | 17.4 ms     | 0.7 ms      |
+
+> Local measurement: macOS 15.7, Node 24, Redis 8.10 on localhost, curl `time_total`. The Express server kept its connection to TMDB open between requests, so the miss numbers leave out connection setup. Numbers on AWS (ElastiCache over the network) will differ and will be recorded separately.
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -185,3 +207,5 @@ npm run dev   # http://localhost:4000
 - Express Router, middleware chain, error-handling middleware (4 args)
 - Passing async errors to next(err)
 - Keeping API keys server-side (dotenv, .env.example)
+- Cache-aside pattern, TTL, cache key normalization
+- Graceful degradation (Redis as optimization, TMDB as source of truth)
