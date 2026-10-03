@@ -98,7 +98,8 @@ npm run dev   # http://localhost:4000
 - [x] Express API proxy for TMDB
 - [ ] Switch client to call the Express server
 - [x] Redis caching (cache-aside, TTL)
-- [ ] Health check, Redis fallback to TMDB
+- [x] Redis fallback to TMDB
+- [ ] Health check (`/health`), CORS restricted to the deployed domain, graceful shutdown
 - [ ] Deploy server to AWS Elastic Beanstalk + ElastiCache
 - [ ] Reviews & ratings
 
@@ -171,6 +172,15 @@ npm run dev   # http://localhost:4000
 
 > Local measurement: macOS 15.7, Node 24, Redis 8.10 on localhost, curl `time_total`. The Express server kept its connection to TMDB open between requests, so the miss numbers leave out connection setup. Numbers on AWS (ElastiCache over the network) will differ and will be recorded separately.
 
+### 2026-10-03
+
+Verified the caching behavior locally (no code changes):
+
+- Key normalization: `The Dark Knight`, `the dark knight`, and `  THE   dark knight ` share one key (first request MISS, the rest HIT); `page=2` gets its own key
+- TTL: after a key expired (`TTL` returned `-2`), the next request was a MISS and the key was stored again with a fresh 3600s TTL
+- Errors not cached: requesting a nonexistent movie (`/api/movie/99999999`) twice returned 404 both times, both were MISSes, and no key was written
+- Non-blocking cache write: with Redis writes paused for 2s (`CLIENT PAUSE 2000 WRITE`), the response still returned in ~135ms and the key appeared after the pause ended
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
@@ -209,3 +219,5 @@ npm run dev   # http://localhost:4000
 - Keeping API keys server-side (dotenv, .env.example)
 - Cache-aside pattern, TTL, cache key normalization
 - Graceful degradation (Redis as optimization, TMDB as source of truth)
+- Negative caching and cache stampede (known trade-offs, not needed at current scale)
+- Fire-and-forget promises need `.catch()` (unhandled rejections crash Node)
