@@ -30,13 +30,16 @@ const fetchTmdb = async (path: string, params: Record<string, string> = {}) => {
   const cacheKey = `tmdb:${path}?${new URLSearchParams(params)}`;
 
   try {
-    const cached = await redis.get(cacheKey);
+    const cached = await redis.get(cacheKey); //If no cached data is found, it will return null. If cached data is found, it will return the cached data as a string.
     if (cached) {
       console.log(`cache HIT  ${cacheKey}`);
       return JSON.parse(cached);
     }
   } catch (err) {
-    console.error("Redis get failed, falling back to TMDB:", (err as Error).message);
+    console.error(
+      "Redis get failed, falling back to TMDB:",
+      (err as Error).message,
+    );
   }
   console.log(`cache MISS ${cacheKey}`);
 
@@ -47,13 +50,16 @@ const fetchTmdb = async (path: string, params: Record<string, string> = {}) => {
   });
   const response = await fetch(`${BASE_URL}${path}?${query}`);
   if (!response.ok) {
-    throw new TmdbError(`TMDB request failed: ${response.statusText}`, response.status);
+    throw new TmdbError(
+      `TMDB request failed: ${response.statusText}`,
+      response.status,
+    );
   }
   const data = await response.json();
 
-  // Not awaited: the user shouldn't wait for the cache write.
+  // Not awaited: the user shouldn't wait for the cache write and get the "data" right away.
   redis
-    .set(cacheKey, JSON.stringify(data), { EX: CACHE_TTL_SECONDS })
+    .set(cacheKey, JSON.stringify(data), { EX: CACHE_TTL_SECONDS }) //cacheKey, 객체를 문자열로, Expiration time(TTL) 설정
     .catch((err) => console.error("Redis set failed:", err.message));
 
   return data;
