@@ -100,7 +100,7 @@ npm run dev   # http://localhost:4000
 - [x] Redis caching (cache-aside, TTL)
 - [x] Redis fallback to TMDB
 - [x] Health check (`/health`), CORS restricted to the deployed domain, graceful shutdown
-- [x] Deploy server to AWS Elastic Beanstalk + ElastiCache (deployed and measured 2026-10-10)
+- [x] Deploy server to AWS Elastic Beanstalk + ElastiCache (deployed, measured and torn down 2026-10-10 to save cost; setup in `docs/aws-verification-2026-10-10/infra.md`)
 - [ ] Reviews & ratings
 
 ## Dev Log
