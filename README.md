@@ -206,6 +206,15 @@ Server-side is the cache effect itself; client-side is dominated by network dist
 | CloudWatch: MISS ~23ms → HIT ~2ms | ![](docs/aws-verification-2026-10-10/console-cloudwatch-miss-hit.png) |
 | Redis SG: 6379 only from the app SG | ![](docs/aws-verification-2026-10-10/console-redis-sg-inbound.png) |
 
+Redis outage on AWS: rebooted the ElastiCache node while polling `/api/movie/1032863` once a second, without touching the server.
+
+- 164 requests, **0 non-200**. `/health` reported `redis: down` for ~7s (05:50:52–05:50:58 UTC) and stayed 200 the whole time
+- Server log during the outage: `Socket closed unexpectedly` → `ECONNREFUSED` (reconnect attempts) → each request `get failed: The client is offline` → MISS (TMDB) → `set failed` → 200
+- Reconnected on its own at 05:50:59. The first request after was a MISS (the reboot wiped the in-memory data, no persistence configured), it was written back, and the next request was a HIT (1.6ms)
+- Note: MISS during the outage took only 4–6ms server-side for this movie, vs a 24.2ms median in the measurement above. Both are TMDB round trips; the difference is likely TMDB's own CDN, since this movie had been requested before and the measurement used movies never requested. So the HIT gain depends on how warm the upstream is: ~1.6ms vs ~4–30ms
+
+Files: [`redis-outage-poll.txt`](docs/aws-verification-2026-10-10/redis-outage-poll.txt), [`redis-outage-server-log.txt`](docs/aws-verification-2026-10-10/redis-outage-server-log.txt)
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)

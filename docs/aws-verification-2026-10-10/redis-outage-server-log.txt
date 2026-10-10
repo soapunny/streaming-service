@@ -1,0 +1,41 @@
+Oct 10 05:50:48: cache HIT  tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:48: GET /api/movie/1032863 200 1.7ms
+Oct 10 05:50:49: cache HIT  tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:49: GET /api/movie/1032863 200 1.6ms
+Oct 10 05:50:50: cache HIT  tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:50: GET /api/movie/1032863 200 1.6ms
+Oct 10 05:50:51: Redis error: Socket closed unexpectedly
+Oct 10 05:50:51: Redis error: ECONNREFUSED
+Oct 10 05:50:51: Redis error: ECONNREFUSED
+Oct 10 05:50:52: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:52: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:52: Redis set failed: The client is offline
+Oct 10 05:50:52: GET /api/movie/1032863 200 32.2ms
+Oct 10 05:50:52: Redis error: ECONNREFUSED
+Oct 10 05:50:53: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:53: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:53: Redis set failed: The client is offline
+Oct 10 05:50:53: GET /api/movie/1032863 200 5.8ms
+Oct 10 05:50:54: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:54: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:54: Redis set failed: The client is offline
+Oct 10 05:50:54: GET /api/movie/1032863 200 4.5ms
+Oct 10 05:50:55: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:55: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:55: Redis set failed: The client is offline
+Oct 10 05:50:55: GET /api/movie/1032863 200 4.2ms
+Oct 10 05:50:57: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:57: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:57: Redis set failed: The client is offline
+Oct 10 05:50:57: GET /api/movie/1032863 200 5.4ms
+Oct 10 05:50:57: Redis error: Connection timeout
+Oct 10 05:50:58: Redis get failed, falling back to TMDB: The client is offline
+Oct 10 05:50:58: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:58: Redis set failed: The client is offline
+Oct 10 05:50:58: GET /api/movie/1032863 200 4.1ms
+Oct 10 05:50:59: cache MISS tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:50:59: GET /api/movie/1032863 200 4.9ms
+Oct 10 05:51:00: cache HIT  tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:51:00: GET /api/movie/1032863 200 1.6ms
+Oct 10 05:51:02: cache HIT  tmdb:/movie/1032863?append_to_response=videos
+Oct 10 05:51:02: GET /api/movie/1032863 200 1.9ms
