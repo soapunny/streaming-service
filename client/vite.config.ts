@@ -10,4 +10,8 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  server: {
+    // API_PROXY lets local dev point at the deployed backend, e.g. the EB URL.
+    proxy: { "/api": process.env.API_PROXY ?? "http://localhost:4000" },
+  },
 });

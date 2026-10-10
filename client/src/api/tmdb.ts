@@ -9,30 +9,25 @@ export const enum Category {
   NOW_PLAYING = "now_playing",
 }
 
-export const BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const API_LANGUAGE = "en-US";
+// Relative path: Vite dev proxy (vite.config.ts) or CloudFront /api/* forwards to Express,
+// which holds the TMDB API key. The key is no longer in the frontend bundle.
+export const BASE_URL = "/api";
 
 export const getMovies = async (category: Category) => {
-  const response = await fetch(
-    `${BASE_URL}/movie/${category}?api_key=${API_KEY}&language=${API_LANGUAGE}`,
-  );
+  const response = await fetch(`${BASE_URL}/movies/${category}`);
   const json = await response.json();
   return json.results;
 };
 
 export const getMovieById = async (id: string) => {
-  const response = await fetch(
-    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=${API_LANGUAGE}&append_to_response=videos`,
-  );
+  const response = await fetch(`${BASE_URL}/movie/${id}`);
   const json = await response.json();
   return json;
 };
 
 export const searchMovies = async (query: string, page: number = 1) => {
-  const response = await fetch(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&language=${API_LANGUAGE}&query=${query}&page=${page}`,
-  );
+  const params = new URLSearchParams({ query, page: String(page) });
+  const response = await fetch(`${BASE_URL}/search?${params}`);
   const json: PaginatedResponse = await response.json();
   return json;
 };

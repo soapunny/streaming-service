@@ -35,3 +35,4 @@ CLAUDE.md
 .serena/
 client/dist-config.json
 client/updated-config.json
+.playwright-mcp/
