@@ -66,8 +66,8 @@ Invalid input returns `400` with an error message.
 ```bash
 cd client
 npm install
-# Add VITE_TMDB_API_KEY to client/.env
-npm run dev
+npm run dev   # proxies /api to http://localhost:4000 (run the server too)
+# or point at a deployed backend: API_PROXY=http://<eb-url> npm run dev
 ```
 
 ### Server
@@ -84,10 +84,10 @@ npm run dev   # http://localhost:4000
 
 | Location      | Variable            | Description                                 |
 | ------------- | ------------------- | ------------------------------------------- |
-| `client/.env` | `VITE_TMDB_API_KEY` | TMDB API key (until client moves to server) |
 | `server/.env` | `TMDB_API_KEY`      | TMDB API key                                |
 | `server/.env` | `PORT`              | Server port (default 4000)                  |
 | `server/.env` | `REDIS_URL`         | Redis URL (default `redis://localhost:6379`) |
+| `server/.env` | `CORS_ORIGIN`       | Allowed origins, comma-separated (default `http://localhost:5173`) |
 
 ## Roadmap
 
@@ -96,11 +96,11 @@ npm run dev   # http://localhost:4000
 - [x] Trailer playback
 - [x] Responsive design (mobile)
 - [x] Express API proxy for TMDB
-- [ ] Switch client to call the Express server
+- [x] Switch client to call the Express server (local dev; production site still on the old build)
 - [x] Redis caching (cache-aside, TTL)
 - [x] Redis fallback to TMDB
-- [ ] Health check (`/health`), CORS restricted to the deployed domain, graceful shutdown
-- [ ] Deploy server to AWS Elastic Beanstalk + ElastiCache
+- [x] Health check (`/health`), CORS restricted to the deployed domain, graceful shutdown
+- [x] Deploy server to AWS Elastic Beanstalk + ElastiCache (deployed and measured 2026-10-10)
 - [ ] Reviews & ratings
 
 ## Dev Log
@@ -180,6 +180,24 @@ Verified the caching behavior locally (no code changes):
 - TTL: after a key expired (`TTL` returned `-2`), the next request was a MISS and the key was stored again with a fresh 3600s TTL
 - Errors not cached: requesting a nonexistent movie (`/api/movie/99999999`) twice returned 404 both times, both were MISSes, and no key was written
 - Non-blocking cache write: with Redis writes paused for 2s (`CLIENT PAUSE 2000 WRITE`), the response still returned in ~135ms and the key appeared after the pause ended
+
+### 2026-10-10
+
+Production readiness + AWS deploy + measurement.
+
+- `/health` always 200 with `redis: up|down` (Redis is optional, so its outage shouldn't fail the instance health check), `CORS_ORIGIN` allowlist, exit on missing `TMDB_API_KEY`, JSON 404, 5xx messages hidden, graceful shutdown on SIGTERM
+- Per-request server-side timing log (`GET /api/movie/550 200 1.9ms`)
+- AWS (us-east-2): Elastic Beanstalk single instance (t3.micro, Node.js 24) + ElastiCache Redis 7.1 (cache.t3.micro) in the default VPC. Redis security group only allows 6379 from the app's security group; not reachable from the internet. Env vars set in EB, app logs streamed to CloudWatch
+- Client now calls `/api/*` (Vite dev proxy); the TMDB key is no longer in the frontend. Verified home / search / detail pages running against the EB backend
+
+Latency on AWS, 20 movies never requested before (first request = MISS, second = HIT, same payloads):
+
+| Measured where | MISS median | HIT median |
+| --- | --- | --- |
+| Server-side (Express on EB, request in → response out) | **24.2ms** (20.6–29.2) | **1.9ms** (1.7–3.4) |
+| Client-side (laptop → EB, includes ~88ms network RTT) | 123.6ms | 95.1ms |
+
+Server-side is the cache effect itself; client-side is dominated by network distance to the region. Raw data, logs and screenshots: [`docs/aws-verification-2026-10-10/`](docs/aws-verification-2026-10-10/)
 
 ### Learning Notes
 

@@ -1,0 +1,10 @@
+MISS n=20 status=['200'] ttfb median=112.9ms total median=114.4ms min/max total=106/172ms
+HIT n=20 status=['200'] ttfb median=87.9ms total median=89.4ms min/max total=85/131ms
+baseline /health (no TMDB, no Redis work): total 0.087927s
+
+# v2 server-side (Express on EB, time from request in to response out), n=20/20
+MISS median=24.2ms min/max=20.6/29.2ms
+HIT median=1.9ms min/max=1.7/3.4ms
+# v2 client-side (laptop -> EB, includes ~88ms network RTT)
+MISS median=123.6ms min/max=105/211ms
+HIT median=95.1ms min/max=87/194ms
