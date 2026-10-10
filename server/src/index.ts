@@ -19,6 +19,16 @@ const CORS_ORIGINS = (process.env.CORS_ORIGIN ?? "http://localhost:5173").split(
 
 app.use(cors({ origin: CORS_ORIGINS }));
 
+// Server-side response time, so latency can be measured without network round trip.
+app.use((req, res, next) => {
+  const start = performance.now();
+  res.on("finish", () => {
+    const ms = (performance.now() - start).toFixed(1);
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} ${ms}ms`);
+  });
+  next();
+});
+
 // Always 200 while the process is up: Redis is optional (TMDB fallback),
 // so a Redis outage shouldn't make the load balancer kill healthy instances.
 app.get("/health", (_req, res) => {
