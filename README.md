@@ -199,6 +199,13 @@ Latency on AWS, 20 movies never requested before (first request = MISS, second =
 
 Server-side is the cache effect itself; client-side is dominated by network distance to the region. Raw data, logs and screenshots: [`docs/aws-verification-2026-10-10/`](docs/aws-verification-2026-10-10/)
 
+| | |
+| --- | --- |
+| EB environment | ![](docs/aws-verification-2026-10-10/console-eb-environment.png) |
+| ElastiCache Redis | ![](docs/aws-verification-2026-10-10/console-elasticache-redis.png) |
+| CloudWatch: MISS ~23ms → HIT ~2ms | ![](docs/aws-verification-2026-10-10/console-cloudwatch-miss-hit.png) |
+| Redis SG: 6379 only from the app SG | ![](docs/aws-verification-2026-10-10/console-redis-sg-inbound.png) |
+
 ### Learning Notes
 
 - TypeScript type narrowing (null check, generics)
